@@ -1,0 +1,1627 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10091e">
+<title>KRADOX–SOFT</title>
+
+<style>
+:root {
+    --bg: #0b0714;
+    --panel: #171027;
+    --panel2: #211637;
+    --purple: #a855f7;
+    --pink: #ec4899;
+    --text: #ffffff;
+    --muted: #a99bbd;
+    --border: rgba(190,130,255,.16);
+}
+
+* {box-sizing:border-box;margin:0;padding:0;}
+
+body {
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 15% 10%, #281342 0, transparent 35%),
+        radial-gradient(circle at 90% 70%, #21103b 0, transparent 35%),
+        var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    overflow-x:hidden;
+}
+
+.game-bg {
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+}
+
+.game-bg span {
+    position:absolute;
+    opacity:.08;
+    font-size:28px;
+    animation:float 12s infinite ease-in-out;
+}
+
+.game-bg span:nth-child(1) {top:10%;left:8%;}
+.game-bg span:nth-child(2) {top:30%;right:10%;animation-delay:2s;}
+.game-bg span:nth-child(3) {top:65%;left:15%;animation-delay:4s;}
+.game-bg span:nth-child(4) {top:80%;right:12%;animation-delay:1s;}
+.game-bg span:nth-child(5) {top:50%;left:80%;animation-delay:3s;}
+
+@keyframes float {
+    0%,100% {transform:translateY(0) rotate(0);}
+    50% {transform:translateY(-25px) rotate(15deg);}
+}
+
+#intro {
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:#090511;
+    animation:introHide .7s ease 3.3s forwards;
+}
+
+.intro-glow {
+    position:absolute;
+    width:250px;
+    height:250px;
+    border-radius:50%;
+    background:#8b35e8;
+    filter:blur(100px);
+    opacity:.35;
+    animation:glowPulse 2s infinite alternate;
+}
+
+.intro-logo {
+    position:relative;
+    display:flex;
+    gap:3px;
+    font-size:clamp(35px,10vw,62px);
+    font-weight:900;
+    letter-spacing:3px;
+    background:linear-gradient(90deg,#a855f7,#ec4899,#fff,#a855f7);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:logoGradient 2s linear infinite;
+}
+
+.intro-logo span {
+    opacity:0;
+    transform:translateY(25px) scale(.8);
+    animation:letterAppear .5s forwards;
+}
+
+.intro-logo span:nth-child(1) {animation-delay:.2s;}
+.intro-logo span:nth-child(2) {animation-delay:.35s;}
+.intro-logo span:nth-child(3) {animation-delay:.5s;}
+.intro-logo span:nth-child(4) {animation-delay:.65s;}
+.intro-logo span:nth-child(5) {animation-delay:.8s;}
+.intro-logo span:nth-child(6) {animation-delay:.95s;}
+
+.intro-line {
+    width:0;
+    height:3px;
+    margin-top:18px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#a855f7,#ec4899);
+    animation:lineAppear .7s ease 1s forwards;
+}
+
+.intro-subtitle {
+    margin-top:15px;
+    color:#b9a6d1;
+    font-size:11px;
+    letter-spacing:3px;
+    opacity:0;
+    animation:subtitleAppear .7s ease 1.3s forwards;
+}
+
+@keyframes letterAppear {
+    to {opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes glowPulse {
+    from {transform:scale(.8);opacity:.25;}
+    to {transform:scale(1.3);opacity:.5;}
+}
+@keyframes lineAppear {to {width:180px;}}
+@keyframes subtitleAppear {to {opacity:1;}}
+@keyframes logoGradient {to {background-position:200% center;}}
+@keyframes introHide {to {opacity:0;visibility:hidden;pointer-events:none;}}
+
+.app {
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:650px;
+    min-height:100vh;
+    margin:auto;
+    padding:20px 16px;
+}
+
+header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:28px;
+}
+
+.logo {
+    font-size:27px;
+    font-weight:900;
+    letter-spacing:2px;
+    background:linear-gradient(90deg,#c084fc,#ec4899);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.header-icon {
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--panel);
+    font-size:20px;
+}
+
+.page {display:none;animation:pageShow .25s ease;}
+.page.active {display:block;}
+
+@keyframes pageShow {
+    from {opacity:0;transform:translateY(8px);}
+    to {opacity:1;transform:translateY(0);}
+}
+
+.section-title {font-size:23px;font-weight:800;margin-bottom:8px;}
+.section-subtitle {color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:22px;}
+
+.hero {
+    position:relative;
+    overflow:hidden;
+    padding:25px 21px;
+    border:1px solid rgba(192,132,252,.25);
+    border-radius:23px;
+    background:linear-gradient(135deg,#321650,#1a102c 65%,#26113d);
+    margin-bottom:25px;
+}
+
+.hero::after {
+    content:"🎮";
+    position:absolute;
+    right:10px;
+    bottom:-10px;
+    font-size:95px;
+    opacity:.15;
+    transform:rotate(-15deg);
+}
+
+.hero-label {color:#d8b4fe;font-size:11px;letter-spacing:2px;margin-bottom:12px;}
+.hero h1 {font-size:27px;line-height:1.2;max-width:300px;margin-bottom:12px;}
+.hero p {color:#c8b7da;font-size:13px;line-height:1.5;max-width:280px;}
+
+.small-title {font-size:17px;font-weight:800;margin:24px 0 14px;}
+
+.quick-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.quick-card {
+    padding:19px 15px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--panel);
+    cursor:pointer;
+    transition:.2s;
+}
+
+.quick-card:active {transform:scale(.97);}
+.quick-icon {font-size:27px;margin-bottom:13px;}
+.quick-card h3 {font-size:15px;margin-bottom:5px;}
+.quick-card p {color:var(--muted);font-size:11px;}
+
+.info-card {
+    padding:18px;
+    margin-top:13px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--panel);
+}
+
+.info-card h3 {font-size:15px;margin-bottom:8px;}
+.info-card p {color:var(--muted);font-size:12px;line-height:1.6;}
+
+.game-card {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px;
+    margin-bottom:13px;
+    border:1px solid var(--border);
+    border-radius:19px;
+    background:linear-gradient(135deg,#1b122b,#130e20);
+}
+
+.game-image {
+    width:61px;
+    height:61px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border-radius:16px;
+    background:linear-gradient(135deg,#7136a7,#32184e);
+    font-size:30px;
+}
+
+/* Картинки игр */
+.game-image img {
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:16px;
+}
+
+.game-info {flex:1;min-width:0;}
+.game-info h3 {font-size:15px;margin-bottom:7px;}
+.game-info p {color:var(--muted);font-size:11px;}
+
+.version {
+    display:inline-block;
+    margin-top:7px;
+    padding:4px 8px;
+    border-radius:7px;
+    color:#d8b4fe;
+    background:rgba(168,85,247,.15);
+    font-size:10px;
+}
+
+.choose-btn {
+    border:none;
+    border-radius:11px;
+    padding:10px 13px;
+    background:linear-gradient(135deg,#9333ea,#c026d3);
+    color:white;
+    font-size:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.back-btn {
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:9px 13px;
+    margin-bottom:20px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:#d8b4fe;
+    background:var(--panel);
+    cursor:pointer;
+}
+
+.platform-tabs {display:flex;gap:10px;margin-bottom:18px;}
+
+.platform-tab {
+    flex:1;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel);
+    color:white;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.platform-tab.active {background:#9333ea;border-color:#a855f7;}
+
+.mode-card {
+    padding:18px;
+    margin-bottom:13px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--panel);
+}
+
+.mode-top {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.mode-top h3 {font-size:16px;}
+
+.mode-tag {
+    color:#d8b4fe;
+    background:rgba(168,85,247,.15);
+    border-radius:7px;
+    padding:5px 8px;
+    font-size:10px;
+    flex-shrink:0;
+}
+
+.download-btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:11px;
+    background:linear-gradient(90deg,#9333ea,#c026d3);
+    color:white;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.profile-card {
+    padding:24px 18px;
+    border:1px solid var(--border);
+    border-radius:21px;
+    background:var(--panel);
+    text-align:center;
+}
+
+.avatar {
+    width:85px;
+    height:85px;
+    display:grid;
+    place-items:center;
+    margin:0 auto 15px;
+    border-radius:50%;
+    border:2px solid #a855f7;
+    background:linear-gradient(135deg,#45206b,#211033);
+    font-size:40px;
+}
+
+.profile-card h2 {font-size:20px;margin-bottom:7px;}
+.profile-card p {color:var(--muted);font-size:12px;margin-bottom:20px;}
+
+.edit-btn {
+    padding:11px 18px;
+    border:1px solid rgba(192,132,252,.3);
+    border-radius:11px;
+    background:rgba(168,85,247,.15);
+    color:#d8b4fe;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.toast {
+    position:fixed;
+    z-index:10001;
+    left:50%;
+    bottom:90px;
+    transform:translate(-50%,20px);
+    opacity:0;
+    pointer-events:none;
+    padding:12px 18px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#211632;
+    color:white;
+    font-size:12px;
+    transition:.25s;
+    text-align:center;
+    width:max-content;
+    max-width:90%;
+}
+
+.toast.show {opacity:1;transform:translate(-50%,0);}
+
+.developer-footer {
+    position:relative;
+    z-index:1;
+    text-align:center;
+    padding:30px 15px 110px;
+    color:#aaa0c9;
+    font-size:13px;
+}
+
+.developer-footer a {
+    display:inline-block;
+    margin-top:8px;
+    color:#bd8aff;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:15px;
+    text-shadow:0 0 12px #a04fff;
+}
+
+.bottom-nav {
+    position:fixed;
+    z-index:100;
+    left:50%;
+    bottom:12px;
+    transform:translateX(-50%);
+    width:calc(100% - 24px);
+    max-width:620px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    padding:9px;
+    border:1px solid rgba(190,130,255,.2);
+    border-radius:19px;
+    background:rgba(20,12,33,.94);
+    backdrop-filter:blur(15px);
+}
+
+.nav-item {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    padding:7px;
+    border-radius:12px;
+    color:#897c9e;
+    font-size:10px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.nav-item span:first-child {font-size:19px;}
+.nav-item.active {color:#d8b4fe;background:rgba(168,85,247,.15);}
+
+@media (max-width:380px) {
+    .hero h1 {font-size:23px;}
+    .game-card {gap:9px;padding:12px;}
+    .game-image {width:52px;height:52px;}
+    .choose-btn {padding:9px;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+    <div class="intro-glow"></div>
+    <div class="intro-logo">
+        <span>K</span><span>R</span><span>A</span><span>D</span><span>O</span><span>X</span><span>–</span><span>S</span><span>O</span><span>F</span><span>T</span>
+    </div>
+    <div class="intro-line"></div>
+    <div class="intro-subtitle">Only the best cheats for all games</div>
+</div>
+
+<div class="game-bg">
+    <span>🎮</span>
+    <span>⚡</span>
+    <span>🎮</span>
+    <span>🎮</span>
+    <span>⚡</span>
+</div>
+
+<div class="app">
+
+<header>
+    <div class="logo">KRADOX–SOFT</div>
+    <div class="header-icon">🎮</div>
+</header>
+
+<section class="page active" id="home">
+    <div class="hero">
+        <div class="hero-label">WELCOME TO KRADOX–SOFT</div>
+        <h1>Играй с KRADOX–SOFT</h1>
+        <p>Платформа KRADOX–SOFT тут вы найдете любой чит на свой вкус.</p>
+    </div>
+
+    <div class="small-title">Быстрый доступ</div>
+
+    <div class="quick-grid">
+        <div class="quick-card" onclick="showPage('games')">
+            <div class="quick-icon">🎮</div>
+            <h3>Читы</h3>
+            <p>Список доступных читов</p>
+        </div>
+
+        <div class="quick-card" onclick="showPage('profile')">
+            <div class="quick-icon">👤</div>
+            <h3>Профиль</h3>
+            <p>Твой профиль</p>
+        </div>
+    </div>
+
+    <div class="small-title">О платформе</div>
+
+    <div class="info-card">
+        <h3>⚡ KRADOX–SOFT</h3>
+        <p>Добро пожаловать на KRADOX–SOFT. Здесь собраны все возможные читы на разные игры.</p>
+    </div>
+</section>
+
+<section class="page" id="games">
+    <div class="section-title">Игры</div>
+    <div class="section-subtitle">Выбери игру, затем нужный вам чит.</div>
+
+    <div class="game-card">
+        <div class="game-image">
+            <img src="PubgMobile.png" alt="PUBG MOBILE">
+        </div>
+        <div class="game-info">
+            <h3>PUBG MOBILE</h3>
+            <p>Выбор читов</p>
+            <span class="version">Версия 4.7</span>
+        </div>
+        <button class="choose-btn" onclick="openModes('pubg')">Выбрать</button>
+    </div>
+
+    <div class="game-card">
+        <div class="game-image">
+            <img src="CounterFlame.png" alt="COUNTER FLAME">
+        </div>
+        <div class="game-info">
+            <h3>COUNTER FLAME</h3>
+            <p>Выбор читов</p>
+            <span class="version">Версия 1.4.1</span>
+        </div>
+        <button class="choose-btn" onclick="openModes('counter')">Выбрать</button>
+    </div>
+</section>
+
+<section class="page" id="modes">
+    <button class="back-btn" onclick="showPage('games')">← Назад к спискам игр</button>
+
+    <div class="section-title" id="modeTitle">Читы</div>
+    <div class="section-subtitle">Выбери чит который тебе нравится.</div>
+
+    <div class="platform-tabs">
+        <button id="androidTab" class="platform-tab active"
+            onclick="selectPlatform('android')">Android</button>
+
+        <button id="iphoneTab" class="platform-tab"
+            onclick="selectPlatform('iphone')">iPhone</button>
+    </div>
+
+    <div id="modeList"></div>
+</section>
+
+<section class="page" id="profile">
+    <div class="section-title">Профиль</div>
+    <div class="section-subtitle">Информация о твоём профиле.</div>
+
+    <div class="profile-card">
+        <div class="avatar">👤</div>
+        <h2 id="profileName">None</h2>
+        <p>Участник KRADOX–SOFT</p>
+        <button class="edit-btn" onclick="editName()">Изменить имя</button>
+    </div>
+</section>
+
+<footer class="developer-footer">
+    <div>Связь с разработчиком</div>
+    <a href="https://t.me/KRADOX" target="_blank" rel="noopener noreferrer">@KRADOX</a>
+</footer>
+
+</div>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+        <span>⌂</span>
+        <span>Главная</span>
+    </div>
+
+    <div class="nav-item" id="nav-games" onclick="showPage('games')">
+        <span>🎮</span>
+        <span>Читы на игры</span>
+    </div>
+
+    <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
+        <span>👤</span>
+        <span>Профиль</span>
+    </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const downloadLinks = {
+    pubg: {
+        android: ["", "", ""],
+        iphone: ["", "", ""]
+    },
+
+    counter: {
+        android: [
+            "https://t.me/+Od2VPMEKDPNiOWM0",
+            "https://t.me/+keUToNmIkBIyZDdk",
+            ""
+        ],
+        iphone: ["", "", ""]
+    }
+};
+
+const gameNames = {
+    pubg: "PUBG MOBILE",
+    counter: "COUNTER FLAME"
+};
+
+let selectedPlatform = "android";
+let currentGame = "";
+
+// Названия читов отдельно для каждой платформы
+function getModeName(game, index) {
+    if (game === "counter" && index === 0) {
+        return selectedPlatform === "android"
+            ? "Vexide Changer | CounterFlame Android"
+            : "Vexide Changer | CounterFlame iPhone";
+    }
+
+    if (game === "counter" && index === 1) {
+        return selectedPlatform === "android"
+            ? "RAVEN HACK | CounterFlame Android"
+            : "RAVEN HACK | CounterFlame iPhone";
+    }
+
+    return "Чит " + (index + 1);
+}
+
+// Обновление названий карточек
+function updateModeNames() {
+    const cards = document.querySelectorAll("#modeList .mode-card");
+
+    cards.forEach((card, index) => {
+        const heading = card.querySelector("h3");
+
+        if (heading) {
+            heading.textContent = getModeName(currentGame, index);
+        }
+    });
+}
+
+// Переключение платформы
+function selectPlatform(platform) {
+    selectedPlatform = platform;
+
+    document.getElementById("androidTab").classList.toggle(
+        "active",
+        platform === "android"
+    );
+
+    document.getElementById("iphoneTab").classList.toggle(
+        "active",
+        platform === "iphone"
+    );
+
+    updateModeNames();
+}
+
+// Переключение страниц
+function showPage(page) {
+    document.querySelectorAll(".page").forEach(el => {
+        el.classList.remove("active");
+    });
+
+    const selectedPage = document.getElementById(page);
+
+    if (selectedPage) {
+        selectedPage.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav-item").forEach(el => {
+        el.classList.remove("active");
+    });
+
+    const nav = document.getElementById("nav-" + page);
+
+    if (nav) {
+        nav.classList.add("active");
+    }
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+// Выбор читов
+function openModes(game) {
+    currentGame = game;
+
+    const title = document.getElementById("modeTitle");
+    const list = document.getElementById("modeList");
+
+    title.textContent = gameNames[game];
+    list.innerHTML = "";
+
+    selectedPlatform = "android";
+
+    document.getElementById("androidTab").classList.add("active");
+    document.getElementById("iphoneTab").classList.remove("active");
+
+    for (let i = 0; i < 3; i++) {
+        const card = document.createElement("div");
+        card.className = "mode-card";
+
+        card.innerHTML = `
+            <div class="mode-top">
+                <h3></h3>
+                <span class="mode-tag">KRADOX–SOFT</span>
+            </div>
+
+            <button class="download-btn"
+                onclick="downloadMode('${game}', ${i})">
+                Скачать
+            </button>
+        `;
+
+        list.appendChild(card);
+    }
+
+    updateModeNames();
+    showPage("modes");
+}
+
+// Переход по ссылке выбранной платформы
+function downloadMode(game, mode) {
+    const link = downloadLinks[game][selectedPlatform][mode];
+
+    if (link && link.trim() !== "") {
+        window.open(link, "_blank");
+    } else {
+        const platformName =
+            selectedPlatform === "android" ? "Android" : "iPhone";
+
+        showToast("Версия для " + platformName + " ещё не доступна");
+    }
+}
+
+// Изменение имени
+function editName() {
+    const currentName = document.getElementById("profileName").textContent;
+    const newName = prompt("Введи новое имя:", currentName);
+
+    if (newName && newName.trim() !== "") {
+        document.getElementById("profileName").textContent = newName.trim();
+    }
+}
+
+// Уведомления
+let toastTimer;
+
+function showToast(message) {
+    const toast = document.getElementById("toast");
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
+
+// Удаление заставки через 4 секунды
+setTimeout(() => {
+    const intro = document.getElementById("intro");
+
+    if (intro) {
+        intro.remove();
+    }
+}, 4000);
+</script>
+
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#10091e">
+<title>KRADOX–SOFT</title>
+
+<style>
+:root {
+    --bg: #0b0714;
+    --panel: #171027;
+    --panel2: #211637;
+    --purple: #a855f7;
+    --pink: #ec4899;
+    --text: #ffffff;
+    --muted: #a99bbd;
+    --border: rgba(190,130,255,.16);
+}
+
+* {box-sizing:border-box;margin:0;padding:0;}
+
+body {
+    min-height:100vh;
+    background:
+        radial-gradient(circle at 15% 10%, #281342 0, transparent 35%),
+        radial-gradient(circle at 90% 70%, #21103b 0, transparent 35%),
+        var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    overflow-x:hidden;
+}
+
+.game-bg {
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    overflow:hidden;
+    z-index:0;
+}
+
+.game-bg span {
+    position:absolute;
+    opacity:.08;
+    font-size:28px;
+    animation:float 12s infinite ease-in-out;
+}
+
+.game-bg span:nth-child(1) {top:10%;left:8%;}
+.game-bg span:nth-child(2) {top:30%;right:10%;animation-delay:2s;}
+.game-bg span:nth-child(3) {top:65%;left:15%;animation-delay:4s;}
+.game-bg span:nth-child(4) {top:80%;right:12%;animation-delay:1s;}
+.game-bg span:nth-child(5) {top:50%;left:80%;animation-delay:3s;}
+
+@keyframes float {
+    0%,100% {transform:translateY(0) rotate(0);}
+    50% {transform:translateY(-25px) rotate(15deg);}
+}
+
+#intro {
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    background:#090511;
+    animation:introHide .7s ease 3.3s forwards;
+}
+
+.intro-glow {
+    position:absolute;
+    width:250px;
+    height:250px;
+    border-radius:50%;
+    background:#8b35e8;
+    filter:blur(100px);
+    opacity:.35;
+    animation:glowPulse 2s infinite alternate;
+}
+
+.intro-logo {
+    position:relative;
+    display:flex;
+    gap:3px;
+    font-size:clamp(35px,10vw,62px);
+    font-weight:900;
+    letter-spacing:3px;
+    background:linear-gradient(90deg,#a855f7,#ec4899,#fff,#a855f7);
+    background-size:200% auto;
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    animation:logoGradient 2s linear infinite;
+}
+
+.intro-logo span {
+    opacity:0;
+    transform:translateY(25px) scale(.8);
+    animation:letterAppear .5s forwards;
+}
+
+.intro-logo span:nth-child(1) {animation-delay:.2s;}
+.intro-logo span:nth-child(2) {animation-delay:.35s;}
+.intro-logo span:nth-child(3) {animation-delay:.5s;}
+.intro-logo span:nth-child(4) {animation-delay:.65s;}
+.intro-logo span:nth-child(5) {animation-delay:.8s;}
+.intro-logo span:nth-child(6) {animation-delay:.95s;}
+
+.intro-line {
+    width:0;
+    height:3px;
+    margin-top:18px;
+    border-radius:10px;
+    background:linear-gradient(90deg,#a855f7,#ec4899);
+    animation:lineAppear .7s ease 1s forwards;
+}
+
+.intro-subtitle {
+    margin-top:15px;
+    color:#b9a6d1;
+    font-size:11px;
+    letter-spacing:3px;
+    opacity:0;
+    animation:subtitleAppear .7s ease 1.3s forwards;
+}
+
+@keyframes letterAppear {
+    to {opacity:1;transform:translateY(0) scale(1);}
+}
+@keyframes glowPulse {
+    from {transform:scale(.8);opacity:.25;}
+    to {transform:scale(1.3);opacity:.5;}
+}
+@keyframes lineAppear {to {width:180px;}}
+@keyframes subtitleAppear {to {opacity:1;}}
+@keyframes logoGradient {to {background-position:200% center;}}
+@keyframes introHide {to {opacity:0;visibility:hidden;pointer-events:none;}}
+
+.app {
+    position:relative;
+    z-index:1;
+    width:100%;
+    max-width:650px;
+    min-height:100vh;
+    margin:auto;
+    padding:20px 16px;
+}
+
+header {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:28px;
+}
+
+.logo {
+    font-size:27px;
+    font-weight:900;
+    letter-spacing:2px;
+    background:linear-gradient(90deg,#c084fc,#ec4899);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+}
+
+.header-icon {
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border:1px solid var(--border);
+    border-radius:14px;
+    background:var(--panel);
+    font-size:20px;
+}
+
+.page {display:none;animation:pageShow .25s ease;}
+.page.active {display:block;}
+
+@keyframes pageShow {
+    from {opacity:0;transform:translateY(8px);}
+    to {opacity:1;transform:translateY(0);}
+}
+
+.section-title {font-size:23px;font-weight:800;margin-bottom:8px;}
+.section-subtitle {color:var(--muted);font-size:13px;line-height:1.5;margin-bottom:22px;}
+
+.hero {
+    position:relative;
+    overflow:hidden;
+    padding:25px 21px;
+    border:1px solid rgba(192,132,252,.25);
+    border-radius:23px;
+    background:linear-gradient(135deg,#321650,#1a102c 65%,#26113d);
+    margin-bottom:25px;
+}
+
+.hero::after {
+    content:"🎮";
+    position:absolute;
+    right:10px;
+    bottom:-10px;
+    font-size:95px;
+    opacity:.15;
+    transform:rotate(-15deg);
+}
+
+.hero-label {color:#d8b4fe;font-size:11px;letter-spacing:2px;margin-bottom:12px;}
+.hero h1 {font-size:27px;line-height:1.2;max-width:300px;margin-bottom:12px;}
+.hero p {color:#c8b7da;font-size:13px;line-height:1.5;max-width:280px;}
+
+.small-title {font-size:17px;font-weight:800;margin:24px 0 14px;}
+
+.quick-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.quick-card {
+    padding:19px 15px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--panel);
+    cursor:pointer;
+    transition:.2s;
+}
+
+.quick-card:active {transform:scale(.97);}
+.quick-icon {font-size:27px;margin-bottom:13px;}
+.quick-card h3 {font-size:15px;margin-bottom:5px;}
+.quick-card p {color:var(--muted);font-size:11px;}
+
+.info-card {
+    padding:18px;
+    margin-top:13px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--panel);
+}
+
+.info-card h3 {font-size:15px;margin-bottom:8px;}
+.info-card p {color:var(--muted);font-size:12px;line-height:1.6;}
+
+.game-card {
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px;
+    margin-bottom:13px;
+    border:1px solid var(--border);
+    border-radius:19px;
+    background:linear-gradient(135deg,#1b122b,#130e20);
+}
+
+.game-image {
+    width:61px;
+    height:61px;
+    flex-shrink:0;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border-radius:16px;
+    background:linear-gradient(135deg,#7136a7,#32184e);
+    font-size:30px;
+}
+
+/* Картинки игр */
+.game-image img {
+    display:block;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:16px;
+}
+
+.game-info {flex:1;min-width:0;}
+.game-info h3 {font-size:15px;margin-bottom:7px;}
+.game-info p {color:var(--muted);font-size:11px;}
+
+.version {
+    display:inline-block;
+    margin-top:7px;
+    padding:4px 8px;
+    border-radius:7px;
+    color:#d8b4fe;
+    background:rgba(168,85,247,.15);
+    font-size:10px;
+}
+
+.choose-btn {
+    border:none;
+    border-radius:11px;
+    padding:10px 13px;
+    background:linear-gradient(135deg,#9333ea,#c026d3);
+    color:white;
+    font-size:12px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.back-btn {
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    padding:9px 13px;
+    margin-bottom:20px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:#d8b4fe;
+    background:var(--panel);
+    cursor:pointer;
+}
+
+.platform-tabs {display:flex;gap:10px;margin-bottom:18px;}
+
+.platform-tab {
+    flex:1;
+    padding:12px;
+    border:1px solid var(--border);
+    border-radius:10px;
+    background:var(--panel);
+    color:white;
+    font-size:14px;
+    cursor:pointer;
+}
+
+.platform-tab.active {background:#9333ea;border-color:#a855f7;}
+
+.mode-card {
+    padding:18px;
+    margin-bottom:13px;
+    border:1px solid var(--border);
+    border-radius:18px;
+    background:var(--panel);
+}
+
+.mode-top {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.mode-top h3 {font-size:16px;}
+
+.mode-tag {
+    color:#d8b4fe;
+    background:rgba(168,85,247,.15);
+    border-radius:7px;
+    padding:5px 8px;
+    font-size:10px;
+    flex-shrink:0;
+}
+
+.download-btn {
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:11px;
+    background:linear-gradient(90deg,#9333ea,#c026d3);
+    color:white;
+    font-size:13px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.profile-card {
+    padding:24px 18px;
+    border:1px solid var(--border);
+    border-radius:21px;
+    background:var(--panel);
+    text-align:center;
+}
+
+.avatar {
+    width:85px;
+    height:85px;
+    display:grid;
+    place-items:center;
+    margin:0 auto 15px;
+    border-radius:50%;
+    border:2px solid #a855f7;
+    background:linear-gradient(135deg,#45206b,#211033);
+    font-size:40px;
+}
+
+.profile-card h2 {font-size:20px;margin-bottom:7px;}
+.profile-card p {color:var(--muted);font-size:12px;margin-bottom:20px;}
+
+.edit-btn {
+    padding:11px 18px;
+    border:1px solid rgba(192,132,252,.3);
+    border-radius:11px;
+    background:rgba(168,85,247,.15);
+    color:#d8b4fe;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.toast {
+    position:fixed;
+    z-index:10001;
+    left:50%;
+    bottom:90px;
+    transform:translate(-50%,20px);
+    opacity:0;
+    pointer-events:none;
+    padding:12px 18px;
+    border:1px solid var(--border);
+    border-radius:12px;
+    background:#211632;
+    color:white;
+    font-size:12px;
+    transition:.25s;
+    text-align:center;
+    width:max-content;
+    max-width:90%;
+}
+
+.toast.show {opacity:1;transform:translate(-50%,0);}
+
+.developer-footer {
+    position:relative;
+    z-index:1;
+    text-align:center;
+    padding:30px 15px 110px;
+    color:#aaa0c9;
+    font-size:13px;
+}
+
+.developer-footer a {
+    display:inline-block;
+    margin-top:8px;
+    color:#bd8aff;
+    text-decoration:none;
+    font-weight:bold;
+    font-size:15px;
+    text-shadow:0 0 12px #a04fff;
+}
+
+.bottom-nav {
+    position:fixed;
+    z-index:100;
+    left:50%;
+    bottom:12px;
+    transform:translateX(-50%);
+    width:calc(100% - 24px);
+    max-width:620px;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    padding:9px;
+    border:1px solid rgba(190,130,255,.2);
+    border-radius:19px;
+    background:rgba(20,12,33,.94);
+    backdrop-filter:blur(15px);
+}
+
+.nav-item {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:5px;
+    padding:7px;
+    border-radius:12px;
+    color:#897c9e;
+    font-size:10px;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.nav-item span:first-child {font-size:19px;}
+.nav-item.active {color:#d8b4fe;background:rgba(168,85,247,.15);}
+
+@media (max-width:380px) {
+    .hero h1 {font-size:23px;}
+    .game-card {gap:9px;padding:12px;}
+    .game-image {width:52px;height:52px;}
+    .choose-btn {padding:9px;}
+}
+</style>
+</head>
+
+<body>
+
+<div id="intro">
+    <div class="intro-glow"></div>
+    <div class="intro-logo">
+        <span>K</span><span>R</span><span>A</span><span>D</span><span>O</span><span>X</span><span>–</span><span>S</span><span>O</span><span>F</span><span>T</span>
+    </div>
+    <div class="intro-line"></div>
+    <div class="intro-subtitle">Only the best cheats for all games</div>
+</div>
+
+<div class="game-bg">
+    <span>🎮</span>
+    <span>⚡</span>
+    <span>🎮</span>
+    <span>🎮</span>
+    <span>⚡</span>
+</div>
+
+<div class="app">
+
+<header>
+    <div class="logo">KRADOX–SOFT</div>
+    <div class="header-icon">🎮</div>
+</header>
+
+<section class="page active" id="home">
+    <div class="hero">
+        <div class="hero-label">WELCOME TO KRADOX–SOFT</div>
+        <h1>Играй с KRADOX–SOFT</h1>
+        <p>Платформа KRADOX–SOFT тут вы найдете любой чит на свой вкус.</p>
+    </div>
+
+    <div class="small-title">Быстрый доступ</div>
+
+    <div class="quick-grid">
+        <div class="quick-card" onclick="showPage('games')">
+            <div class="quick-icon">🎮</div>
+            <h3>Читы</h3>
+            <p>Список доступных читов</p>
+        </div>
+
+        <div class="quick-card" onclick="showPage('profile')">
+            <div class="quick-icon">👤</div>
+            <h3>Профиль</h3>
+            <p>Твой профиль</p>
+        </div>
+    </div>
+
+    <div class="small-title">О платформе</div>
+
+    <div class="info-card">
+        <h3>⚡ KRADOX–SOFT</h3>
+        <p>Добро пожаловать на KRADOX–SOFT. Здесь собраны все возможные читы на разные игры.</p>
+    </div>
+</section>
+
+<section class="page" id="games">
+    <div class="section-title">Игры</div>
+    <div class="section-subtitle">Выбери игру, затем нужный вам чит.</div>
+
+    <div class="game-card">
+        <div class="game-image">
+            <img src="PubgMobile.png" alt="PUBG MOBILE">
+        </div>
+        <div class="game-info">
+            <h3>PUBG MOBILE</h3>
+            <p>Выбор читов</p>
+            <span class="version">Версия 4.7</span>
+        </div>
+        <button class="choose-btn" onclick="openModes('pubg')">Выбрать</button>
+    </div>
+
+    <div class="game-card">
+        <div class="game-image">
+            <img src="CounterFlame.png" alt="COUNTER FLAME">
+        </div>
+        <div class="game-info">
+            <h3>COUNTER FLAME</h3>
+            <p>Выбор читов</p>
+            <span class="version">Версия 1.4.1</span>
+        </div>
+        <button class="choose-btn" onclick="openModes('counter')">Выбрать</button>
+    </div>
+</section>
+
+<section class="page" id="modes">
+    <button class="back-btn" onclick="showPage('games')">← Назад к спискам игр</button>
+
+    <div class="section-title" id="modeTitle">Читы</div>
+    <div class="section-subtitle">Выбери чит который тебе нравится.</div>
+
+    <div class="platform-tabs">
+        <button id="androidTab" class="platform-tab active"
+            onclick="selectPlatform('android')">Android</button>
+
+        <button id="iphoneTab" class="platform-tab"
+            onclick="selectPlatform('iphone')">iPhone</button>
+    </div>
+
+    <div id="modeList"></div>
+</section>
+
+<section class="page" id="profile">
+    <div class="section-title">Профиль</div>
+    <div class="section-subtitle">Информация о твоём профиле.</div>
+
+    <div class="profile-card">
+        <div class="avatar">👤</div>
+        <h2 id="profileName">None</h2>
+        <p>Участник KRADOX–SOFT</p>
+        <button class="edit-btn" onclick="editName()">Изменить имя</button>
+    </div>
+</section>
+
+<footer class="developer-footer">
+    <div>Связь с разработчиком</div>
+    <a href="https://t.me/KRADOX" target="_blank" rel="noopener noreferrer">@KRADOX</a>
+</footer>
+
+</div>
+
+<nav class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+        <span>⌂</span>
+        <span>Главная</span>
+    </div>
+
+    <div class="nav-item" id="nav-games" onclick="showPage('games')">
+        <span>🎮</span>
+        <span>Читы на игры</span>
+    </div>
+
+    <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
+        <span>👤</span>
+        <span>Профиль</span>
+    </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const downloadLinks = {
+    pubg: {
+        android: ["", "", ""],
+        iphone: ["", "", ""]
+    },
+
+    counter: {
+        android: [
+            "https://t.me/+Od2VPMEKDPNiOWM0",
+            "https://t.me/+keUToNmIkBIyZDdk",
+            ""
+        ],
+        iphone: ["", "", ""]
+    }
+};
+
+const gameNames = {
+    pubg: "PUBG MOBILE",
+    counter: "COUNTER FLAME"
+};
+
+let selectedPlatform = "android";
+let currentGame = "";
+
+// Названия читов отдельно для каждой платформы
+function getModeName(game, index) {
+    if (game === "counter" && index === 0) {
+        return selectedPlatform === "android"
+            ? "Vexide Changer | CounterFlame Android"
+            : "Vexide Changer | CounterFlame iPhone";
+    }
+
+    if (game === "counter" && index === 1) {
+        return selectedPlatform === "android"
+            ? "RAVEN HACK | CounterFlame Android"
+            : "RAVEN HACK | CounterFlame iPhone";
+    }
+
+    return "Чит " + (index + 1);
+}
+
+// Обновление названий карточек
+function updateModeNames() {
+    const cards = document.querySelectorAll("#modeList .mode-card");
+
+    cards.forEach((card, index) => {
+        const heading = card.querySelector("h3");
+
+        if (heading) {
+            heading.textContent = getModeName(currentGame, index);
+        }
+    });
+}
+
+// Переключение платформы
+function selectPlatform(platform) {
+    selectedPlatform = platform;
+
+    document.getElementById("androidTab").classList.toggle(
+        "active",
+        platform === "android"
+    );
+
+    document.getElementById("iphoneTab").classList.toggle(
+        "active",
+        platform === "iphone"
+    );
+
+    updateModeNames();
+}
+
+// Переключение страниц
+function showPage(page) {
+    document.querySelectorAll(".page").forEach(el => {
+        el.classList.remove("active");
+    });
+
+    const selectedPage = document.getElementById(page);
+
+    if (selectedPage) {
+        selectedPage.classList.add("active");
+    }
+
+    document.querySelectorAll(".nav-item").forEach(el => {
+        el.classList.remove("active");
+    });
+
+    const nav = document.getElementById("nav-" + page);
+
+    if (nav) {
+        nav.classList.add("active");
+    }
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+}
+
+// Выбор читов
+function openModes(game) {
+    currentGame = game;
+
+    const title = document.getElementById("modeTitle");
+    const list = document.getElementById("modeList");
+
+    title.textContent = gameNames[game];
+    list.innerHTML = "";
+
+    selectedPlatform = "android";
+
+    document.getElementById("androidTab").classList.add("active");
+    document.getElementById("iphoneTab").classList.remove("active");
+
+    for (let i = 0; i < 3; i++) {
+        const card = document.createElement("div");
+        card.className = "mode-card";
+
+        card.innerHTML = `
+            <div class="mode-top">
+                <h3></h3>
+                <span class="mode-tag">KRADOX–SOFT</span>
+            </div>
+
+            <button class="download-btn"
+                onclick="downloadMode('${game}', ${i})">
+                Скачать
+            </button>
+        `;
+
+        list.appendChild(card);
+    }
+
+    updateModeNames();
+    showPage("modes");
+}
+
+// Переход по ссылке выбранной платформы
+function downloadMode(game, mode) {
+    const link = downloadLinks[game][selectedPlatform][mode];
+
+    if (link && link.trim() !== "") {
+        window.open(link, "_blank");
+    } else {
+        const platformName =
+            selectedPlatform === "android" ? "Android" : "iPhone";
+
+        showToast("Версия для " + platformName + " ещё не доступна");
+    }
+}
+
+// Изменение имени
+function editName() {
+    const currentName = document.getElementById("profileName").textContent;
+    const newName = prompt("Введи новое имя:", currentName);
+
+    if (newName && newName.trim() !== "") {
+        document.getElementById("profileName").textContent = newName.trim();
+    }
+}
+
+// Уведомления
+let toastTimer;
+
+function showToast(message) {
+    const toast = document.getElementById("toast");
+
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2500);
+}
+
+// Удаление заставки через 4 секунды
+setTimeout(() => {
+    const intro = document.getElementById("intro");
+
+    if (intro) {
+        intro.remove();
+    }
+}, 4000);
+</script>
+
+</body>
+</html>
